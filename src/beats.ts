@@ -37,8 +37,13 @@ export const beats = {
     inboxIn: 12,
     firstBubble: 28,
     bubbleEvery: 23,
-    /** Frame en el que el contador salta a cada número de `scenes.problem.counters`. */
-    counterSteps: [34, 86, 142],
+    /**
+     * Frame en el que el contador salta a cada número de
+     * `scenes.problem.counters`. Van corridos unos frames respecto de las
+     * burbujas para que el "pop" del contador no se superponga con el de
+     * la burbuja y suene como un solo golpe.
+     */
+    counterSteps: [34, 86, 148],
     sublineIn: 150,
   },
 

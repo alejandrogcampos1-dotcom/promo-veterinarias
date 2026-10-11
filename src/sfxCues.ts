@@ -3,6 +3,12 @@ import {scenes} from './config';
 import {sceneStarts, TOTAL_FRAMES, transitionStarts} from './timeline';
 
 export type SfxKind = 'pop' | 'whoosh' | 'ding';
+
+/**
+ * `volume` es el retoque por cue (0,8 a 1). Se multiplica por
+ * `audio.sfx.volume` y por el `gain` del efecto, así que el nivel final de
+ * cualquier efecto queda entre el 30% y el 38%.
+ */
 export type SfxCue = {frame: number; kind: SfxKind; volume?: number};
 
 const SCENE = {
@@ -34,7 +40,7 @@ export const sfxCues: SfxCue[] = (() => {
     cues.push({
       frame: at('hook', beats.hook.resultsStart + i * beats.hook.resultEvery),
       kind: 'pop',
-      volume: 0.8,
+      volume: 0.85,
     }),
   );
 
@@ -47,7 +53,7 @@ export const sfxCues: SfxCue[] = (() => {
     cues.push({
       frame: at('problem', beats.problem.firstBubble + i * beats.problem.bubbleEvery),
       kind: 'pop',
-      volume: 0.7,
+      volume: 0.8,
     }),
   );
   beats.problem.counterSteps.forEach((f) =>
@@ -59,7 +65,7 @@ export const sfxCues: SfxCue[] = (() => {
     cues.push({
       frame: at('solution', beats.solution.buildStart + i * beats.solution.buildEvery),
       kind: 'pop',
-      volume: 0.75,
+      volume: 0.8,
     }),
   );
 
@@ -79,7 +85,7 @@ export const sfxCues: SfxCue[] = (() => {
     cues.push({
       frame: at('offer', beats.offer.bulletsStart + i * beats.offer.bulletEvery + 7),
       kind: 'ding',
-      volume: 0.8,
+      volume: 0.9,
     }),
   );
 
@@ -87,7 +93,14 @@ export const sfxCues: SfxCue[] = (() => {
   cues.push({frame: at('cta', beats.cta.buttonIn), kind: 'pop'});
   cues.push({frame: at('cta', beats.cta.noteIn), kind: 'ding'});
 
-  return cues
+  const sorted = cues
     .filter((c) => c.frame >= 0 && c.frame < TOTAL_FRAMES)
     .sort((a, b) => a.frame - b.frame);
+
+  // El whoosh de una transición ya marca el golpe: si justo ahí entraba
+  // además un "pop", lo sacamos para que no suenen amontonados.
+  const whooshes = sorted.filter((c) => c.kind === 'whoosh').map((c) => c.frame);
+  return sorted.filter(
+    (c) => c.kind !== 'pop' || !whooshes.some((w) => Math.abs(w - c.frame) <= 3),
+  );
 })();

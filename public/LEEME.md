@@ -6,17 +6,29 @@ simplemente no suena.
 
 ```
 public/
-├── musica.mp3          ← música de fondo (volumen 0,15 con fade in/out)
-├── voz.mp3             ← tu voz en off
-├── sfx/
+├── musica.mp3          ← música de fondo (volumen 0,15 con fade in/out) — FALTA
+├── voz.mp3             ← voz en off (puesta, pero desactivada: ver abajo)
+├── sfx/                ← los 3 efectos, emparejados a -20 LUFS
 │   ├── pop.mp3         ← entrada de tarjetas
 │   ├── whoosh.mp3      ← transiciones entre escenas
-│   └── ding.mp3        ← checks verdes
+│   ├── ding.mp3        ← checks verdes
+│   ├── pop-alt.mp3     ← variantes: golpe más grave
+│   ├── whoosh-alt.mp3  ←            swish tonal
+│   └── ding-alt.mp3    ←            tono más grave
 ├── fotos/              ← tus fotos (ver `media` en src/config.ts)
 │   ├── perro.jpg
 │   └── logo.png
 └── fonts/              ← tipografías (no tocar, las genera `npm run fonts`)
 ```
+
+## Estado actual
+
+- **Efectos:** listos y sonando, 41 en total, entre el 30% y el 38%.
+- **Voz:** el archivo está en `public/voz.mp3` pero `audio.voiceover.enabled`
+  está en `false`. La grabación dura **39,9 s** y el video **48 s**, así que
+  todavía no coincide con los subtítulos ni con las escenas. Activala recién
+  cuando los tiempos estén ajustados.
+- **Música:** falta `public/musica.mp3`.
 
 ## Cómo se enganchan
 
@@ -25,8 +37,17 @@ En `src/config.ts`:
 ```ts
 export const audio = {
   music:     {src: 'musica.mp3', enabled: 'auto', volume: 0.15, ...},
-  voiceover: {src: 'voz.mp3',    enabled: 'auto', volume: 1, offsetSeconds: 0},
-  sfx:       {enabled: 'auto', volume: 0.35, pop: 'sfx/pop.mp3', ...},
+  voiceover: {src: 'voz.mp3',    enabled: false,  volume: 1, offsetSeconds: 0},
+  sfx: {
+    enabled: 'auto',
+    volume: 0.38,
+    duckUnderVoice: 0.55,
+    sounds: {
+      pop:    {src: 'sfx/pop.mp3',    gain: 1},
+      whoosh: {src: 'sfx/whoosh.mp3', gain: 0.8},
+      ding:   {src: 'sfx/ding.mp3',   gain: 0.9},
+    },
+  },
 };
 
 export const media = {

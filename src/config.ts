@@ -331,18 +331,37 @@ export const audio = {
   },
   voiceover: {
     src: 'voz.mp3',
-    enabled: 'auto' as 'auto' | boolean,
+    /**
+     * ⚠️ En false a propósito: la voz grabada dura 39,9 s y el video 48 s,
+     * así que todavía no coincide con los subtítulos ni con las escenas.
+     * Ponelo en 'auto' cuando los tiempos estén ajustados.
+     */
+    enabled: false as 'auto' | boolean,
     volume: 1,
     /** Si la voz arranca corrida, movela con esto (en segundos, puede ser negativo). */
     offsetSeconds: 0,
   },
   sfx: {
     enabled: 'auto' as 'auto' | boolean,
-    volume: 0.35,
-    pop: 'sfx/pop.mp3', // entrada de tarjetas
-    whoosh: 'sfx/whoosh.mp3', // transiciones
-    ding: 'sfx/ding.mp3', // checks verdes
-    type: 'sfx/pop.mp3', // tecleo del buscador (reusa pop, bajito)
+    /** Volumen general de los efectos. 0,38 = 38% del volumen del archivo. */
+    volume: 0.38,
+    /**
+     * Cuánto baja un efecto que cae justo encima de una frase de la voz en off
+     * (0,55 = al 55%). Solo se aplica si la voz está activada. 1 = no baja.
+     */
+    duckUnderVoice: 0.55,
+    sounds: {
+      // Los tres están emparejados a -20 LUFS, así que suenan todos igual de
+      // fuerte. `gain` es el retoque fino de cada uno dentro de la mezcla.
+      pop: {src: 'sfx/pop.mp3', gain: 1}, // entrada de tarjetas
+      whoosh: {src: 'sfx/whoosh.mp3', gain: 0.8}, // transiciones
+      ding: {src: 'sfx/ding.mp3', gain: 0.9}, // checks verdes
+    },
+    /**
+     * En public/sfx/ hay una variante de cada uno: pop-alt.mp3 (golpe grave),
+     * whoosh-alt.mp3 (swish tonal) y ding-alt.mp3 (tono grave).
+     * Para probarlas, cambiá el `src` de arriba.
+     */
   },
 };
 

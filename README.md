@@ -148,9 +148,6 @@ export const media = {
 ```
 public/musica.mp3     → fondo, volumen 0,15, con fade in y fade out
 public/voz.mp3        → voz en off
-public/sfx/pop.mp3    → entrada de tarjetas
-public/sfx/whoosh.mp3 → transiciones
-public/sfx/ding.mp3   → checks verdes
 ```
 
 Se detectan solos. Si pusiste el archivo y no suena, forzalo:
@@ -158,6 +155,49 @@ Se detectan solos. Si pusiste el archivo y no suena, forzalo:
 ```ts
 music: {src: 'musica.mp3', enabled: true, volume: 0.15, ...}
 ```
+
+### Efectos de sonido
+
+Ya están puestos y mezclados: **41 efectos** repartidos en las 8 escenas.
+
+```ts
+sfx: {
+  volume: 0.38,          // volumen general
+  duckUnderVoice: 0.55,  // un efecto que cae sobre una frase baja al 55%
+  sounds: {
+    pop:    {src: 'sfx/pop.mp3',    gain: 1},    // entrada de tarjetas
+    whoosh: {src: 'sfx/whoosh.mp3', gain: 0.8},  // transiciones
+    ding:   {src: 'sfx/ding.mp3',   gain: 0.9},  // checks verdes
+  },
+}
+```
+
+| Efecto | Dónde suena | Veces |
+| --- | --- | --- |
+| `whoosh` | los 7 cortes entre escenas, el golpe de "¿Y la tuya?" y el divisor del antes/después | 9 |
+| `pop` | resultados del buscador, burbujas de mensajes, saltos del contador, bloques de la landing, entrada de tarjetas | 21 |
+| `ding` | los 4 checks verdes de beneficios, los 4 de la oferta y el cierre | 11 |
+
+Los tres archivos están emparejados a **−20 LUFS**, así que suenan todos igual
+de fuerte. Con `volume: 0.38` y los retoques por cue, cada efecto queda entre
+el **30% y el 38%** — dentro del rango pedido y con el pico de toda la pista en
+−6,9 dBFS, que deja aire de sobra para la voz.
+
+**Ducking:** si un efecto cae justo encima de una frase de la voz en off, baja
+solo al 55%. Las frases salen de `subtitles.cues`, así que si reajustás los
+subtítulos el ducking se reacomoda solo. Solo se aplica cuando la voz está
+activada.
+
+En `public/sfx/` hay además una variante de cada uno: `pop-alt.mp3` (golpe más
+grave), `whoosh-alt.mp3` (swish tonal) y `ding-alt.mp3` (tono más grave). Para
+probarlas, cambiá el `src` en el bloque de arriba.
+
+Dos reglas automáticas evitan que la mezcla se amontone: un `pop` que caiga a
+menos de 3 frames de un `whoosh` se descarta, y los saltos del contador van
+corridos unos frames respecto de las burbujas.
+
+Las posiciones salen de `src/sfxCues.ts`, que lee los mismos `beats.ts` que
+usan las animaciones: si movés una animación, el sonido la sigue.
 
 ### Sincronizar los subtítulos con tu voz
 
