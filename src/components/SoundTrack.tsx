@@ -56,24 +56,51 @@ export const SoundTrack: React.FC = () => {
         />
       ) : null}
 
-      {voiceOn ? (
-        voiceOffset >= 0 ? (
-          <Sequence from={voiceOffset} name="Voz en off">
-            <Audio
-              src={staticFile(audio.voiceover.src)}
-              volume={audio.voiceover.volume}
-              onError={ignore(audio.voiceover.src)}
-            />
-          </Sequence>
-        ) : (
-          <Audio
-            src={staticFile(audio.voiceover.src)}
-            trimBefore={-voiceOffset}
-            volume={audio.voiceover.volume}
-            onError={ignore(audio.voiceover.src)}
-          />
-        )
-      ) : null}
+      {voiceOn
+        ? audio.voiceover.phrases.length > 0
+          ? // Frase por frase: cada una se recorta del mp3 y se planta en su
+            // momento del video. Las pausas se estiran, el habla no se toca.
+            audio.voiceover.phrases.map((phrase, i) => {
+              const length = Math.max(
+                1,
+                Math.round((phrase.to - phrase.from) * fps),
+              );
+              return (
+                <Sequence
+                  key={`voz-${i}`}
+                  from={Math.round((phrase.at + audio.voiceover.offsetSeconds) * fps)}
+                  durationInFrames={length}
+                  name={`Voz ${i + 1} · ${phrase.nota}`}
+                >
+                  <Audio
+                    src={staticFile(audio.voiceover.src)}
+                    trimBefore={Math.round(phrase.from * fps)}
+                    volume={audio.voiceover.volume}
+                    onError={ignore(audio.voiceover.src)}
+                  />
+                </Sequence>
+              );
+            })
+          : voiceOffset >= 0
+            ? [
+                <Sequence from={voiceOffset} name="Voz en off" key="voz">
+                  <Audio
+                    src={staticFile(audio.voiceover.src)}
+                    volume={audio.voiceover.volume}
+                    onError={ignore(audio.voiceover.src)}
+                  />
+                </Sequence>,
+              ]
+            : [
+                <Audio
+                  key="voz"
+                  src={staticFile(audio.voiceover.src)}
+                  trimBefore={-voiceOffset}
+                  volume={audio.voiceover.volume}
+                  onError={ignore(audio.voiceover.src)}
+                />,
+              ]
+        : null}
 
       {sfxCues.map((cue, i) => {
         const sound = audio.sfx.sounds[cue.kind];

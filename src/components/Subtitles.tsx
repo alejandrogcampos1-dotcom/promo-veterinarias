@@ -31,6 +31,14 @@ export const SubtitleTrack: React.FC = () => {
   const list = words(cue.text);
   const mask = highlightMask(cue.text, cue.highlight);
 
+  // Las frases largas se achican lo justo para seguir entrando en dos
+  // renglones dentro de la franja, sin empujar el contenido de la escena.
+  const resolvedLength = list.join(' ').length;
+  const fontSize =
+    resolvedLength > subtitles.shrinkOver
+      ? Math.round(subtitles.fontSize * Math.max(0.85, subtitles.shrinkOver / resolvedLength))
+      : subtitles.fontSize;
+
   // Todas las palabras terminan de entrar antes de la mitad del cue.
   const revealWindow = Math.min(total * 0.55, fps * 0.85);
   const every = list.length > 1 ? revealWindow / list.length : 0;
@@ -64,7 +72,7 @@ export const SubtitleTrack: React.FC = () => {
           transform: `translateY(${(1 - blockIn) * 22}px)`,
           textAlign: 'center',
           fontFamily: fontBody,
-          fontSize: subtitles.fontSize,
+          fontSize,
           fontWeight: 600,
           lineHeight: 1.24,
           letterSpacing: -0.4,

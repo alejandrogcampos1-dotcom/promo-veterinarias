@@ -1,9 +1,9 @@
 # Promo veterinarias — video vertical con Remotion
 
-Video promocional **1080×1920, 30 fps, 48 segundos** para vender landings a
+Video promocional **1080×1920, 30 fps, 49,6 segundos** para vender landings a
 veterinarias y pet shops de Quilmes y GBA Sur. Pensado para mandar por
 WhatsApp: engancha en los primeros 2 segundos y se entiende **sin sonido**
-gracias a los subtítulos quemados.
+gracias a los subtítulos quemados. Lleva voz en off y efectos de sonido.
 
 Está armado para **reusarlo en otros rubros** (barberías, gimnasios,
 odontólogos) cambiando un solo archivo: `src/config.ts`.
@@ -199,9 +199,38 @@ corridos unos frames respecto de las burbujas.
 Las posiciones salen de `src/sfxCues.ts`, que lee los mismos `beats.ts` que
 usan las animaciones: si movés una animación, el sonido la sigue.
 
+### La voz en off, frase por frase
+
+La grabación dura **39,9 s** y el video **49,6 s**, así que en vez de tirarla
+de corrido se reparte frase por frase: cada una se recorta del mp3 y se planta
+en el momento de su escena. **Lo único que se estira son las pausas; el habla
+no se toca.**
+
+```ts
+voiceover: {
+  volume: 2,              // +6 dB: la grabación vino baja (−25,3 LUFS)
+  phrases: [
+    // at = segundo del VIDEO · from/to = tramo del MP3
+    {at: 0.30, from: 0.00, to: 3.43, nota: 'Ahora mismo, alguien en Quilmes…'},
+    {at: 4.08, from: 3.65, to: 6.37, nota: 'Y encuentra a la de la otra cuadra.'},
+    ...
+  ],
+}
+```
+
+Para mover una frase, cambiás su `at` (y el `from`/`to` del cue que le
+corresponde en `subtitles.cues`, que va en el mismo orden). Si vaciás
+`phrases`, la voz se reproduce de corrido desde el segundo 0.
+
+Los 15 tramos del mp3 se midieron con detección de silencios y se asignaron a
+cada frase contando núcleos silábicos del audio y comparándolos con el guion:
+las 14 frases quedan entre 4,4 y 7,4 sílabas por segundo, que es el rango
+normal del castellano hablado.
+
 ### Sincronizar los subtítulos con tu voz
 
-Los tiempos están **en segundos** en `subtitles.cues`:
+Los tiempos están **en segundos** en `subtitles.cues`, uno por frase y en el
+mismo orden que `voiceover.phrases`:
 
 ```ts
 export const subtitles = {
@@ -219,8 +248,12 @@ export const subtitles = {
   signos, así que `la mitad` matchea con `…la mitad.`).
 - Las palabras aparecen de a una, repartidas en la primera mitad del cue.
 
-Si la voz grabada te queda corrida unas décimas, tocá `offsetSeconds` y listo.
-Si queda corrida solo en una parte, ajustá los `from`/`to` de esos cues.
+Si la voz grabada te queda corrida unas décimas, tocá `offsetSeconds` y listo
+(mueve la voz y los subtítulos juntos). Si queda corrida solo en una parte,
+ajustá el `at` de esa frase y el `from`/`to` de su cue.
+
+Los textos largos se achican solos para no pasar de dos renglones dentro de la
+franja (`subtitles.shrinkOver`), así nunca empujan el contenido de la escena.
 
 ---
 
@@ -256,7 +289,10 @@ src/
 | 5 | Beneficios | 20,73 s | 32,98 s | entra de costado |
 | 6 | Antes / Después | 32,73 s | 36,98 s | barrido circular |
 | 7 | Oferta y precio | 36,73 s | 43,98 s | sube |
-| 8 | Llamado a la acción | 43,73 s | 48,00 s | — |
+| 8 | Llamado a la acción | 43,73 s | 49,60 s | — |
+
+La escena 8 es más larga que las demás porque tiene que entrar la última
+frase de la voz ("Respondé este mensaje…" y "Sin compromiso") sin apurarla.
 
 Las escenas se superponen porque las transiciones comen frames de las dos. Si
 cambiás una duración en `scenes.*.durationInFrames`, el total y los cortes se

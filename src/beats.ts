@@ -28,7 +28,8 @@ export const beats = {
     dimStart: 12,
     emptyCardIn: 26,
     shakeStart: 36,
-    punchlineIn: 62,
+    /** Cae un toque antes de que la voz diga "¿Y la tuya?", para anticiparla. */
+    punchlineIn: 78,
     headlineIn: 8,
   },
 

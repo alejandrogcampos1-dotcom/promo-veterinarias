@@ -267,9 +267,11 @@ export const scenes = {
     ],
   },
 
-  // ── Escena 8 · Llamado a la acción (0:44 – 0:48) ───────────────────────
+  // ── Escena 8 · Llamado a la acción (0:44 – 0:49) ───────────────────────
   cta: {
-    durationInFrames: 128,
+    // Más larga que las demás porque tiene que entrar la última frase de la
+    // voz ("Respondé este mensaje…" + "Sin compromiso") sin apurarla.
+    durationInFrames: 176,
     button: 'Respondé este mensaje',
     sub: 'Te armo una **demo gratis** con tu {rubro}',
     note: 'Sin compromiso',
@@ -286,30 +288,39 @@ export const subtitles = {
   /** Corrimiento global en segundos. Si la voz entra tarde, subí este número. */
   offsetSeconds: 0,
   fontSize: 52,
+  /**
+   * Los textos largos bajan de tamaño solos para no pasar de dos renglones.
+   * Es la cantidad de caracteres a partir de la cual empieza a achicarse.
+   */
+  shrinkOver: 58,
+  /**
+   * Cada cue arranca y termina junto a su frase de la voz (ver
+   * `audio.voiceover.phrases`). Si movés una frase, movés también su cue.
+   */
   cues: [
     // Escena 1
-    {from: 0.25, to: 3.8, text: 'Ahora mismo alguien en {zona} está buscando una {rubro}', highlight: '{zona}'},
+    {from: 0.30, to: 3.73, text: 'Ahora mismo alguien en {zona} está buscando una {rubro}', highlight: '{zona}'},
     // Escena 2
-    {from: 4.15, to: 6.3, text: 'Y encuentra a la de la otra cuadra', highlight: 'la otra cuadra'},
-    {from: 6.5, to: 7.9, text: '¿Y la tuya?', highlight: 'tuya?'},
+    {from: 4.08, to: 6.80, text: 'Y encuentra a la de la otra cuadra', highlight: 'la otra cuadra'},
+    {from: 6.92, to: 7.97, text: '¿Y la tuya?', highlight: 'tuya?'},
     // Escena 3
-    {from: 8.3, to: 11.3, text: 'Solo con redes respondés lo mismo todo el día', highlight: 'lo mismo'},
-    {from: 11.5, to: 14.8, text: 'y los turnos se te pierden entre los mensajes', highlight: 'se te pierden'},
+    {from: 8.35, to: 10.64, text: 'Solo con redes respondés lo mismo todo el día', highlight: 'lo mismo'},
+    {from: 10.64, to: 12.57, text: 'y los turnos se te pierden entre los mensajes', highlight: 'se te pierden'},
     // Escena 4
-    {from: 15.3, to: 19.6, text: 'Con una web propia todo eso se ordena solo', highlight: 'web propia'},
+    {from: 15.35, to: 18.03, text: 'Con una web propia todo eso se ordena solo', highlight: 'web propia'},
     // Escena 5
-    {from: 21.2, to: 23.9, text: 'Aparecés cuando te buscan', highlight: 'cuando te buscan'},
-    {from: 24.3, to: 27.0, text: 'Te piden turno por WhatsApp en un toque', highlight: 'en un toque'},
-    {from: 27.4, to: 30.1, text: 'Tus horarios y tu ubicación siempre a mano', highlight: 'siempre a mano'},
-    {from: 30.5, to: 32.6, text: 'Y una imagen que da confianza', highlight: 'confianza'},
+    {from: 21.25, to: 22.75, text: 'Aparecés cuando te buscan', highlight: 'cuando te buscan'},
+    {from: 24.25, to: 26.43, text: 'Te piden turno por WhatsApp en un toque', highlight: 'en un toque'},
+    {from: 27.25, to: 29.84, text: 'Tus horarios y tu ubicación siempre a mano', highlight: 'siempre a mano'},
+    {from: 30.35, to: 32.05, text: 'Y una imagen que da confianza', highlight: 'confianza'},
     // Escena 6
-    {from: 33.4, to: 36.4, text: 'La diferencia se nota al toque', highlight: 'al toque'},
+    {from: 33.55, to: 35.21, text: 'La diferencia se nota al toque', highlight: 'al toque'},
     // Escena 7
-    {from: 37.3, to: 41.0, text: 'Tu web lista en {dias} días, desde {precio} dólares', highlight: '{dias} días'},
-    {from: 41.2, to: 43.6, text: 'Pagás la mitad al empezar y la mitad al entregar', highlight: 'la mitad'},
+    {from: 37.15, to: 40.55, text: 'Tu web lista en {dias} días, desde {precio} dólares', highlight: '{dias} días'},
+    {from: 40.70, to: 44.16, text: 'Pagás la mitad al empezar y la otra mitad cuando la ves andando', highlight: 'la otra mitad'},
     // Escena 8
-    {from: 44.2, to: 46.5, text: 'Respondé este mensaje y te armo una demo gratis', highlight: 'demo gratis'},
-    {from: 46.7, to: 47.8, text: 'Sin compromiso', highlight: 'Sin compromiso'},
+    {from: 44.40, to: 48.21, text: 'Respondé este mensaje y te armo una demo gratis con tu {rubro}', highlight: 'demo gratis'},
+    {from: 48.33, to: 49.30, text: 'Sin compromiso', highlight: 'Sin compromiso'},
   ],
 };
 
@@ -331,15 +342,44 @@ export const audio = {
   },
   voiceover: {
     src: 'voz.mp3',
+    enabled: 'auto' as 'auto' | boolean,
     /**
-     * ⚠️ En false a propósito: la voz grabada dura 39,9 s y el video 48 s,
-     * así que todavía no coincide con los subtítulos ni con las escenas.
-     * Ponelo en 'auto' cuando los tiempos estén ajustados.
+     * La grabación vino bastante baja (−25,3 LUFS), así que se le suben 6 dB
+     * para que el video no quede flojo en el celular. Con esto el pico queda
+     * en −2,4 dB, o sea sin riesgo de saturar.
      */
-    enabled: false as 'auto' | boolean,
-    volume: 1,
+    volume: 2,
     /** Si la voz arranca corrida, movela con esto (en segundos, puede ser negativo). */
     offsetSeconds: 0,
+    /**
+     * La grabación dura 39,9 s y el video 49,6 s, así que en vez de tirarla
+     * de corrido se reparte frase por frase: cada una se recorta del mp3 y se
+     * planta en el momento de su escena. Lo único que se estira son las
+     * pausas; el habla no se toca.
+     *
+     *   at   → segundo del VIDEO en el que entra la frase
+     *   from → segundo del MP3 donde empieza
+     *   to   → segundo del MP3 donde termina
+     *
+     * Dejá la lista vacía y la voz se reproduce de corrido desde el segundo 0.
+     */
+    phrases: [
+      {at: 0.30, from: 0.0, to: 3.43, nota: 'Ahora mismo, alguien en Quilmes…'},
+      {at: 4.08, from: 3.65, to: 6.37, nota: 'Y encuentra a la de la otra cuadra.'},
+      {at: 6.92, from: 6.56, to: 7.61, nota: '¿Y la tuya?'},
+      {at: 8.35, from: 7.66, to: 9.95, nota: 'Solo con redes, respondés lo mismo…'},
+      {at: 10.64, from: 9.95, to: 11.88, nota: '…y los turnos se te pierden.'},
+      {at: 15.35, from: 12.39, to: 15.07, nota: 'Con una web propia…'},
+      {at: 21.25, from: 15.49, to: 16.99, nota: 'Aparecés cuando te buscan.'},
+      {at: 24.25, from: 17.22, to: 19.4, nota: 'Te piden turno por WhatsApp…'},
+      {at: 27.25, from: 19.99, to: 22.58, nota: 'Tus horarios y tu ubicación…'},
+      {at: 30.35, from: 22.79, to: 24.49, nota: 'Y una imagen que da confianza.'},
+      {at: 33.55, from: 24.94, to: 26.6, nota: 'La diferencia se nota al toque.'},
+      {at: 37.15, from: 26.96, to: 30.36, nota: 'Tu web lista en siete días…'},
+      {at: 40.7, from: 30.83, to: 34.29, nota: 'Pagás la mitad al empezar…'},
+      {at: 44.4, from: 34.8, to: 38.61, nota: 'Respondé este mensaje…'},
+      {at: 48.33, from: 38.76, to: 39.73, nota: 'Sin compromiso.'},
+    ],
   },
   sfx: {
     enabled: 'auto' as 'auto' | boolean,
