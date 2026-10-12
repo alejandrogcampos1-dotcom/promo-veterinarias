@@ -40,7 +40,7 @@ export const video = {
 export const brand = {
   agency: 'pogoo', // ← tu nombre o el de tu estudio
   tagline: 'Webs que traen clientes',
-  phone: '1121554103', // ← tu número de contacto
+  phone: '11 2155-4103', // ← tu número de contacto
   phoneLabel: 'Escribime al', // texto chico antes del número
 };
 
@@ -273,7 +273,13 @@ export const scenes = {
   cta: {
     // Más larga que las demás porque tiene que entrar la última frase de la
     // voz ("Respondé este mensaje…" + "Sin compromiso") sin apurarla.
-    durationInFrames: 176,
+    //
+    // El valor exacto además cierra el video en 1456 frames, que es múltiplo
+    // de 16. No es casualidad: a 30 fps y 48 kHz cada 16 frames entran 25
+    // paquetes AAC justos, así que video y audio terminan en el mismo
+    // milisegundo. Con cualquier otro largo el audio queda unos ms más largo,
+    // y en ese tramo sin imagen el reproductor muestra un frame NEGRO.
+    durationInFrames: 189,
     button: 'Respondé este mensaje',
     sub: 'Te armo una **demo gratis** con tu {rubro}',
     note: 'Sin compromiso',

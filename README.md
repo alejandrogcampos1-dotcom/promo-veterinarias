@@ -1,6 +1,6 @@
 # Promo veterinarias — video vertical con Remotion
 
-Video promocional **1080×1920, 30 fps, 48,1 segundos** para vender landings a
+Video promocional **1080×1920, 30 fps, 48,5 segundos** para vender landings a
 veterinarias y pet shops de Quilmes y GBA Sur. Pensado para mandar por
 WhatsApp: engancha en los primeros 2 segundos y se entiende **sin sonido**
 gracias a los subtítulos quemados. Lleva voz en off y efectos de sonido.
@@ -212,7 +212,7 @@ usan las animaciones: si movés una animación, el sonido la sigue.
 
 ### La voz en off, frase por frase
 
-La grabación dura **39,9 s** y el video **48,1 s**, así que en vez de tirarla
+La grabación dura **39,9 s** y el video **48,5 s**, así que en vez de tirarla
 de corrido se reparte frase por frase: cada una se recorta del mp3 y se planta
 en el momento de su escena. **Lo único que se estira son las pausas; el habla
 no se toca.**
@@ -300,11 +300,18 @@ src/
 | 5 | Beneficios | 19,23 s | 31,48 s | entra de costado |
 | 6 | Antes / Después | 31,23 s | 35,48 s | barrido circular |
 | 7 | Oferta y precio | 35,23 s | 42,48 s | sube |
-| 8 | Llamado a la acción | 42,23 s | 48,10 s | — |
+| 8 | Llamado a la acción | 42,23 s | 48,53 s | — |
 
-Dos escenas se salen del molde por la voz: la 8 es más larga (176 frames)
+Dos escenas se salen del molde por la voz: la 8 es más larga (189 frames)
 para que entre la última frase sin apurarla, y la 4 más corta (150) porque si
 no quedaba un silencio de 3 segundos antes de los beneficios.
+
+**El total son 1456 frames, y que sea múltiplo de 16 no es casualidad.** A
+30 fps y 48 kHz, cada 16 frames entran exactamente 25 paquetes de audio AAC.
+Con cualquier otro largo el audio termina unos milisegundos después que la
+última imagen, y en ese tramo sin video el reproductor muestra **un frame
+negro**. Si cambiás duraciones de escena, tratá de que el total siga siendo
+múltiplo de 16; `npm run build` avisa y lo corrige si puede.
 
 Las escenas se superponen porque las transiciones comen frames de las dos. Si
 cambiás una duración en `scenes.*.durationInFrames`, el total y los cortes se
@@ -334,8 +341,14 @@ recalculan solos (`npm run stills` te imprime la tabla actualizada).
 
 ```bash
 npm run build
-# → out/promo-veterinarias.mp4   (H.264, 1080×1920, 30 fps, ~48 s, ~12 MB)
+# → out/promo-veterinarias.mp4   (H.264, 1080×1920, 30 fps, 48,53 s, ~12 MB)
 ```
+
+Después de renderizar, `scripts/finish-render.mjs` hace dos chequeos y los
+imprime: **qué archivos de audio encontró en `public/` y cuáles faltan** (si
+falta la música, lo dice con todas las letras), y que el video y el audio
+terminen en el mismo milisegundo, para que el último frame sea el del cierre
+y no uno negro.
 
 Si el render no encuentra Chrome, Remotion se baja el suyo solo la primera
 vez. Para apuntarlo a uno ya instalado:

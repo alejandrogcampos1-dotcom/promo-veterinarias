@@ -24,7 +24,7 @@ public/
 ## Estado actual
 
 - **Efectos:** listos y sonando, 41 en total, entre el 30% y el 38%.
-- **Voz:** lista y sincronizada. La grabación dura 39,9 s y el video 48,1 s,
+- **Voz:** lista y sincronizada. La grabación dura 39,9 s y el video 48,5 s,
   así que se reparte frase por frase (ver `voiceover.phrases` en el config):
   se estiran las pausas, no el habla. Va +6 dB porque vino baja.
 - **Música:** falta `public/musica.mp3`. Apenas la copies acá entra sola: 15%,

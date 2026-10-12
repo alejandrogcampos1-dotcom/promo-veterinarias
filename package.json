@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "remotion studio",
     "studio": "remotion studio",
-    "build": "remotion render PromoVeterinarias out/promo-veterinarias.mp4",
+    "build": "remotion render PromoVeterinarias out/promo-veterinarias.mp4 && node scripts/finish-render.mjs",
     "stills": "node scripts/render-stills.mjs",
     "upgrade": "remotion upgrade",
     "typecheck": "tsc --noEmit",
