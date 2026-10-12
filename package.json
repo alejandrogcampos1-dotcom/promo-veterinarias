@@ -11,7 +11,8 @@
     "upgrade": "remotion upgrade",
     "typecheck": "tsc --noEmit",
     "fonts": "node scripts/download-fonts.mjs",
-    "audio": "node scripts/render-audio.mjs"
+    "audio": "node scripts/render-audio.mjs",
+    "check": "node scripts/check-audio.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.534",

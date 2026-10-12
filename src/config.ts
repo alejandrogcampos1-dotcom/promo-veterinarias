@@ -345,11 +345,24 @@ export const audio = {
     volume: 0.15,
     fadeInSeconds: 1.5,
     fadeOutSeconds: 2.5,
-    /** Desde qué segundo del mp3 arrancar. */
-    startFromSeconds: 0,
     /**
-     * Si la pista es más corta que el video, se repite para que haya música
-     * de punta a punta. Si es más larga, no cambia nada.
+     * Desde qué segundo del mp3 arrancar. La pista que está puesta tiene una
+     * entrada muy suave: recién a los 2,1 s tiene cuerpo, así que se la saltea.
+     */
+    startFromSeconds: 2.1,
+    /**
+     * Cuántos segundos usar a partir de `startFromSeconds`. null = hasta el
+     * final del archivo.
+     *
+     * La pista actual dura 48 s pero la música termina a los 42,1 s: los
+     * últimos 6 s son su propio fade y silencio. Si se usara entera, el cierre
+     * del video quedaría mudo. Recortando a 40 s (de 2,1 a 42,1) el loop trae
+     * el tema de vuelta justo para el llamado a la acción.
+     */
+    useSeconds: 40 as number | null,
+    /**
+     * Si el tramo elegido es más corto que el video, se repite para que haya
+     * música de punta a punta. Si es más largo, no cambia nada.
      */
     loop: true,
   },

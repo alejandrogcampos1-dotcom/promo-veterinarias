@@ -31,6 +31,35 @@ export const SoundTrack: React.FC = () => {
   // Los efectos solo se agachan si hay voz con la que pelearse.
   const duck = voiceOn ? audio.sfx.duckUnderVoice : 1;
 
+  /** Volumen de la música en un frame del video: fade in, meseta, fade out. */
+  const musicVolumeAt = (globalFrame: number) =>
+    interpolate(
+      globalFrame,
+      [0, fadeIn, TOTAL_FRAMES - fadeOut, TOTAL_FRAMES],
+      [0, audio.music.volume, audio.music.volume, 0],
+      {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
+    );
+
+  /**
+   * En cuántos tramos se reparte la música. Si `useSeconds` recorta la pista
+   * a menos de lo que dura el video y `loop` está activo, se repite el tramo
+   * las veces que haga falta hasta cubrirlo entero.
+   */
+  const musicChunks = (() => {
+    const slice =
+      audio.music.useSeconds === null
+        ? TOTAL_FRAMES
+        : Math.max(1, Math.round(audio.music.useSeconds * fps));
+    if (slice >= TOTAL_FRAMES || !audio.music.loop) {
+      return [{from: 0, durationInFrames: TOTAL_FRAMES}];
+    }
+    const out: {from: number; durationInFrames: number}[] = [];
+    for (let from = 0; from < TOTAL_FRAMES; from += slice) {
+      out.push({from, durationInFrames: Math.min(slice, TOTAL_FRAMES - from)});
+    }
+    return out;
+  })();
+
   // `onError` es la red de seguridad: si un archivo falta o está roto,
   // Remotion lo saltea en vez de cortar el render.
   const ignore = (name: string) => (err: Error) => {
@@ -40,26 +69,27 @@ export const SoundTrack: React.FC = () => {
 
   return (
     <>
-      {musicOn ? (
-        <Audio
-          src={staticFile(audio.music.src)}
-          loop={audio.music.loop}
-          // Sin esto, la curva de volumen se reinicia en cada repetición: la
-          // música volvería a hacer fade in a mitad del video y nunca haría
-          // el fade out del final.
-          loopVolumeCurveBehavior="extend"
-          trimBefore={Math.round(audio.music.startFromSeconds * fps)}
-          volume={(f) =>
-            interpolate(
-              f,
-              [0, fadeIn, TOTAL_FRAMES - fadeOut, TOTAL_FRAMES],
-              [0, audio.music.volume, audio.music.volume, 0],
-              {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
-            )
-          }
-          onError={ignore(audio.music.src)}
-        />
-      ) : null}
+      {musicOn
+        ? musicChunks.map((chunk, i) => (
+            // Una secuencia por vuelta de la pista. Cada una arranca el mp3 en
+            // `startFromSeconds` y la corta la propia secuencia. El volumen se
+            // calcula con el frame GLOBAL del video, así el fade in y el fade
+            // out se aplican una sola vez sobre el total y no en cada vuelta.
+            <Sequence
+              key={`musica-${i}`}
+              from={chunk.from}
+              durationInFrames={chunk.durationInFrames}
+              name={musicChunks.length > 1 ? `Música ${i + 1}/${musicChunks.length}` : 'Música'}
+            >
+              <Audio
+                src={staticFile(audio.music.src)}
+                trimBefore={Math.round(audio.music.startFromSeconds * fps)}
+                volume={(f) => musicVolumeAt(chunk.from + f)}
+                onError={ignore(audio.music.src)}
+              />
+            </Sequence>
+          ))
+        : null}
 
       {voiceOn
         ? audio.voiceover.phrases.length > 0

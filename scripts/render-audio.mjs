@@ -1,6 +1,6 @@
 /**
  * Renderiza SOLO la pista de audio del video (voz + efectos + música).
- * Sirve para revisar la mezcla sin esperar el render de los 1443 frames.
+ * Sirve para revisar la mezcla sin esperar el render de los 1456 frames.
  *
  *   npm run audio            → out/promo-veterinarias.wav
  *   npm run audio -- out/mezcla.wav

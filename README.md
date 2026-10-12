@@ -26,6 +26,7 @@ Otros comandos:
 | `npm run stills -- --guides` | Stills con las zonas seguras dibujadas encima |
 | `npm run stills -- --seg=5,23,39` | Stills de esos segundos, en `out/stills-seg/` |
 | `npm run audio` | Solo la pista de audio, para revisar la mezcla rápido |
+| `npm run check` | Mide el mp4 ya hecho y dice si la mezcla es la del config |
 | `npm run typecheck` | Chequea tipos de TypeScript |
 | `npm run fonts` | Vuelve a bajar las tipografías a `public/fonts/` |
 
@@ -158,10 +159,24 @@ Se detectan solos. Si pusiste el archivo y no suena, forzalo:
 music: {src: 'musica.mp3', enabled: true, volume: 0.15, ...}
 ```
 
-La música **se repite sola** si la pista es más corta que el video
+La música **se repite sola** si el tramo elegido es más corto que el video
 (`music.loop`), y el fade in de 1,5 s y el fade out de 2,5 s se aplican una
-sola vez sobre el total, no en cada repetición. Para revisar la mezcla sin
-esperar el render de los 1443 frames:
+sola vez sobre el total, no en cada repetición.
+
+**Si tu pista tiene entrada suave o cola de silencio**, recortala sin tocar el
+archivo. La que está puesta dura 48 s pero tiene música sólo entre los 1,9 s y
+los 42,1 s: si se usara entera, el video arrancaría casi mudo y el cierre
+quedaría en silencio. Con estos dos valores se usa nada más que el cuerpo del
+tema, y el loop lo trae de vuelta justo para el llamado a la acción:
+
+```ts
+music: {
+  startFromSeconds: 2.1,   // desde qué segundo del mp3 arrancar
+  useSeconds: 40,          // cuántos usar a partir de ahí (null = hasta el final)
+}
+```
+
+Para revisar la mezcla sin esperar el render de los 1456 frames:
 
 ```bash
 npm run audio        # → out/promo-veterinarias.wav
@@ -349,6 +364,36 @@ imprime: **qué archivos de audio encontró en `public/` y cuáles faltan** (si
 falta la música, lo dice con todas las letras), y que el video y el audio
 terminen en el mismo milisegundo, para que el último frame sea el del cierre
 y no uno negro.
+
+### Revisar la mezcla sin escucharla
+
+```bash
+npm run check
+```
+
+Mide el mp4 ya renderizado y dice si cada capa está donde dice el config:
+
+```
+── Música ──
+  nivel medido 0.1555 · pedido 0.15 (0.31 dB)
+  ✓ suena al 15%
+  ✓ suena en todo el video (24/24 tramos con música)
+  ✓ fade in de 1.5 s     ✓ fade out de 2.5 s
+── Voz en off ──
+  15 frases · nivel medido 2.00 · pedido 2 (-0.01 dB)
+  ✓ cada frase cae donde dice el config (corrimiento máximo 0.3 ms)
+── Efectos ──
+  ✓ están los 41 en su frame y en nivel
+```
+
+No mide el volumen total —que mezcla las tres capas y no sirve para saber de
+quién es cada decibel— sino que **reconstruye cada capa por separado** y la
+busca adentro de la mezcla por proyección: `⟨capa, mezcla⟩ / ⟨capa, capa⟩`.
+Si la capa está al volumen pedido, da ese volumen; si no está, da casi cero.
+Y como el cociente se calcula contra la propia capa, da igual que la música
+suba o baje de intensidad: lo que se mide es la ganancia aplicada.
+
+Correlo cada vez que cambies la música o la voz.
 
 Si el render no encuentra Chrome, Remotion se baja el suyo solo la primera
 vez. Para apuntarlo a uno ya instalado:

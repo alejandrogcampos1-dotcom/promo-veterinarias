@@ -6,8 +6,8 @@ simplemente no suena.
 
 ```
 public/
-├── musica.mp3          ← música de fondo (volumen 0,15 con fade in/out) — FALTA
-├── voz.mp3             ← voz en off (puesta, pero desactivada: ver abajo)
+├── musica.mp3          ← música de fondo (volumen 0,15 con fade in/out)
+├── voz.mp3             ← voz en off
 ├── sfx/                ← los 3 efectos, emparejados a -20 LUFS
 │   ├── pop.mp3         ← entrada de tarjetas
 │   ├── whoosh.mp3      ← transiciones entre escenas
@@ -23,13 +23,25 @@ public/
 
 ## Estado actual
 
-- **Efectos:** listos y sonando, 41 en total, entre el 30% y el 38%.
-- **Voz:** lista y sincronizada. La grabación dura 39,9 s y el video 48,5 s,
-  así que se reparte frase por frase (ver `voiceover.phrases` en el config):
-  se estiran las pausas, no el habla. Va +6 dB porque vino baja.
-- **Música:** falta `public/musica.mp3`. Apenas la copies acá entra sola: 15%,
-  fade in de 1,5 s, fade out de 2,5 s, y si la pista es más corta que el video
-  se repite para cubrirlo entero. No hay que tocar nada del código.
+Las tres capas están puestas y sonando.
+
+- **Efectos:** 41 en total, entre el 30% y el 38%.
+- **Voz:** sincronizada. La grabación dura 39,9 s y el video 48,5 s, así que se
+  reparte frase por frase (ver `voiceover.phrases` en el config): se estiran las
+  pausas, no el habla. Va +6 dB porque vino baja.
+- **Música:** al 15% de punta a punta, con fade in de 1,5 s y fade out de 2,5 s.
+
+La pista que está puesta dura 48 s pero tiene música sólo entre los **1,9 s y
+los 42,1 s** (los bordes son su propia entrada suave y su cola de silencio). Por
+eso el config la recorta y la repite, así no hay ni un segundo mudo:
+
+```ts
+music: {startFromSeconds: 2.1, useSeconds: 40, loop: true}
+```
+
+**Si cambiás la música por otra**, mirá dónde empieza y termina de verdad y
+ajustá esos dos números. Si tu pista suena entera de principio a fin, poné
+`startFromSeconds: 0` y `useSeconds: null`.
 
 ## Cómo se enganchan
 
@@ -38,7 +50,7 @@ En `src/config.ts`:
 ```ts
 export const audio = {
   music:     {src: 'musica.mp3', enabled: 'auto', volume: 0.15, ...},
-  voiceover: {src: 'voz.mp3',    enabled: false,  volume: 1, offsetSeconds: 0},
+  voiceover: {src: 'voz.mp3',    enabled: 'auto', volume: 2, offsetSeconds: 0},
   sfx: {
     enabled: 'auto',
     volume: 0.38,
