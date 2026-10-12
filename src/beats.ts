@@ -54,8 +54,8 @@ export const beats = {
     buildStart: 30,
     buildEvery: 11,
     /** La landing "scrollea" sola hasta el final de la página. */
-    panStart: 120,
-    panFrames: 54,
+    panStart: 98,
+    panFrames: 36,
   },
 
   benefits: {
@@ -63,12 +63,29 @@ export const beats = {
      *  transición de entrada no muestra la pantalla vacía. */
     startOffset: 0,
     cardDuration: 90,
+    /**
+     * Cuántos frames antes arranca cada tarjeta (salvo la primera). Con esto
+     * la que entra se cruza con la que sale, en vez de esperar a que la
+     * anterior termine de irse y dejar la pantalla vacía casi un segundo.
+     */
+    overlap: 16,
     /** Dentro de cada tarjeta: */
     titleIn: 6,
-    visualIn: 16,
+    /** Casi en cero: si no, la tarjeta blanca entra vacía y se llena después. */
+    visualIn: 4,
     checkAt: 58,
-    /** Hasta cuándo se queda la tarjeta antes de salir. */
-    outAt: 78,
+    /**
+     * Frames que tarda en irse la tarjeta que sale. Arranca justo cuando
+     * entra la siguiente (el momento sale de `benefitCardStart`, porque la
+     * primera tarjeta dura menos que las otras).
+     */
+    outFrames: 16,
+    /**
+     * Desde qué distancia entra la tarjeta nueva. Corta a propósito: si
+     * entrara desde fuera de la pantalla, en el cruce quedaría el centro
+     * vacío mientras una se va y la otra todavía no llegó.
+     */
+    enterFrom: 420,
   },
 
   beforeAfter: {
@@ -83,8 +100,10 @@ export const beats = {
     kickerIn: 16,
     countStart: 26,
     countFrames: 44,
-    bulletsStart: 86,
-    bulletEvery: 24,
+    /** Los checks entran apenas termina de contar el precio, y bastante
+     *  seguidos, para que la tarjeta no se quede a medio llenar. */
+    bulletsStart: 78,
+    bulletEvery: 16,
     shineStart: 70,
   },
 
@@ -97,3 +116,13 @@ export const beats = {
     agencyIn: 60,
   },
 } as const;
+
+/**
+ * Frame (relativo a la escena 5) en el que empieza a entrar cada tarjeta de
+ * beneficio. Todas menos la primera arrancan `overlap` frames antes, para
+ * cruzarse con la que sale. Lo usan la escena y los efectos de sonido.
+ */
+export const benefitCardStart = (index: number): number =>
+  beats.benefits.startOffset +
+  index * beats.benefits.cardDuration -
+  (index > 0 ? beats.benefits.overlap : 0);

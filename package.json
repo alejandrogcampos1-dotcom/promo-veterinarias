@@ -10,7 +10,8 @@
     "stills": "node scripts/render-stills.mjs",
     "upgrade": "remotion upgrade",
     "typecheck": "tsc --noEmit",
-    "fonts": "node scripts/download-fonts.mjs"
+    "fonts": "node scripts/download-fonts.mjs",
+    "audio": "node scripts/render-audio.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.534",

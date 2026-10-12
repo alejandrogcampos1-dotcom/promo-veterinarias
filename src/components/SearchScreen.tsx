@@ -29,6 +29,18 @@ export const SearchScreen: React.FC<{
   emptyRow?: {progress: number; shake: number} | null;
   /** Alto del mapita. En la escena 2 se colapsa a 0 para dar lugar. */
   mapHeight?: number;
+  /**
+   * Acercamiento DENTRO de la pantalla (1 = normal). Es lo que usa la escena
+   * 2 para "entrar" a los resultados: el celular no se mueve ni se agranda,
+   * así que nunca se sale de los márgenes de seguridad.
+   */
+  contentZoom?: number;
+  /**
+   * Cuántos px sube el contenido junto con el acercamiento. Va de la mano de
+   * `contentZoom`: el buscador se va para arriba entero (como si scrolleara)
+   * en vez de quedar cortado por la mitad.
+   */
+  contentShift?: number;
 }> = ({
   width,
   height,
@@ -40,6 +52,8 @@ export const SearchScreen: React.FC<{
   label,
   emptyRow = null,
   mapHeight = 168,
+  contentZoom = 1,
+  contentShift = 0,
 }) => {
   const results = scenes.hook.results;
 
@@ -53,6 +67,11 @@ export const SearchScreen: React.FC<{
           display: 'flex',
           flexDirection: 'column',
           gap: 24,
+          transform:
+            contentZoom === 1 && contentShift === 0
+              ? undefined
+              : `translateY(${contentShift}px) scale(${contentZoom})`,
+          transformOrigin: '50% 0%',
         }}
       >
         <SearchBar text={typedText} caret={caret} focus={focus} fontSize={34} />

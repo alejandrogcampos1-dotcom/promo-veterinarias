@@ -1,4 +1,4 @@
-import {beats} from './beats';
+import {beats, benefitCardStart} from './beats';
 import {scenes} from './config';
 import {sceneStarts, TOTAL_FRAMES, transitionStarts} from './timeline';
 
@@ -71,7 +71,7 @@ export const sfxCues: SfxCue[] = (() => {
 
   // 5 · entrada de cada tarjeta + check verde.
   scenes.benefits.cards.forEach((_, i) => {
-    const base = beats.benefits.startOffset + i * beats.benefits.cardDuration;
+    const base = benefitCardStart(i);
     cues.push({frame: at('benefits', base), kind: 'pop'});
     cues.push({frame: at('benefits', base + beats.benefits.checkAt), kind: 'ding'});
   });

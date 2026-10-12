@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ease, springIn} from '../anim';
-import {beats} from '../beats';
+import {beats, benefitCardStart as cardStart} from '../beats';
 import {colors, scenes} from '../config';
 import {
   ChatTapVisual,
@@ -51,16 +51,25 @@ const visualFor = (kind: CardConfig['kind'], height: number) => {
 };
 
 /** Una de las cuatro tarjetas de beneficio. El frame ya viene local. */
-const BenefitSlide: React.FC<{card: CardConfig; first: boolean}> = ({card, first}) => {
+const BenefitSlide: React.FC<{
+  card: CardConfig;
+  first: boolean;
+  /** Frame local en el que empieza a entrar la tarjeta siguiente. 0 = es la última. */
+  exitAt: number;
+}> = ({card, first, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
 
-  const enter = springIn(frame, fps, {delay: 0, duration: 28});
-  const exit = ease(frame, b.outAt, b.outAt + 12, 0, 1);
+  const enter = springIn(frame, fps, {delay: 0, duration: 26});
+  // La última no se va sola: de eso se encarga la transición a la escena 6.
+  const exit = exitAt === 0 ? 0 : ease(frame, exitAt, exitAt + b.outFrames, 0, 1);
 
   // La primera tarjeta no entra deslizando: la trae la transición de escena.
-  const x = (first ? 0 : (1 - enter) * 1000) - exit * 1000;
-  const opacity = (first ? 1 : Math.min(1, enter * 2.2)) * (1 - exit);
+  // Entrada y salida recorren la misma distancia corta y se cruzan: mientras
+  // una se va la otra ya está entrando, así nunca queda la pantalla vacía.
+  const x = (first ? 0 : (1 - enter) * b.enterFrom) - exit * b.enterFrom;
+  const opacity =
+    (first ? 1 : Math.min(1, enter * 2.2)) * (1 - Math.max(0, exit * 1.8 - 0.8));
   const visualHeight = 714;
 
   return (
@@ -152,9 +161,10 @@ export const Scene5Benefits: React.FC = () => {
   const frame = useCurrentFrame();
   const cards = scenes.benefits.cards;
 
-  const active = Math.min(
-    cards.length - 1,
-    Math.max(0, Math.floor((frame - b.startOffset) / b.cardDuration)),
+  // La tarjeta activa cambia en cuanto la siguiente empieza a entrar.
+  const active = cards.reduce(
+    (acc, _, i) => (frame >= cardStart(i) ? i : acc),
+    0,
   );
 
   return (
@@ -188,11 +198,15 @@ export const Scene5Benefits: React.FC = () => {
       {cards.map((card, i) => (
         <Sequence
           key={card.title}
-          from={b.startOffset + i * b.cardDuration}
-          durationInFrames={b.cardDuration + 14}
+          from={cardStart(i)}
+          durationInFrames={b.cardDuration + b.overlap + 30}
           name={`Beneficio ${i + 1}`}
         >
-          <BenefitSlide card={card} first={i === 0} />
+          <BenefitSlide
+            card={card}
+            first={i === 0}
+            exitAt={i === cards.length - 1 ? 0 : cardStart(i + 1) - cardStart(i)}
+          />
         </Sequence>
       ))}
     </AbsoluteFill>

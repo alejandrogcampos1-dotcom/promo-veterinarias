@@ -43,6 +43,11 @@ export const SoundTrack: React.FC = () => {
       {musicOn ? (
         <Audio
           src={staticFile(audio.music.src)}
+          loop={audio.music.loop}
+          // Sin esto, la curva de volumen se reinicia en cada repetición: la
+          // música volvería a hacer fade in a mitad del video y nunca haría
+          // el fade out del final.
+          loopVolumeCurveBehavior="extend"
           trimBefore={Math.round(audio.music.startFromSeconds * fps)}
           volume={(f) =>
             interpolate(

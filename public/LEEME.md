@@ -24,11 +24,12 @@ public/
 ## Estado actual
 
 - **Efectos:** listos y sonando, 41 en total, entre el 30% y el 38%.
-- **Voz:** lista y sincronizada. La grabación dura 39,9 s y el video 49,6 s,
+- **Voz:** lista y sincronizada. La grabación dura 39,9 s y el video 48,1 s,
   así que se reparte frase por frase (ver `voiceover.phrases` en el config):
   se estiran las pausas, no el habla. Va +6 dB porque vino baja.
-- **Música:** falta `public/musica.mp3`. Cuando la pongas, entra sola al 15%
-  con fade in y fade out.
+- **Música:** falta `public/musica.mp3`. Apenas la copies acá entra sola: 15%,
+  fade in de 1,5 s, fade out de 2,5 s, y si la pista es más corta que el video
+  se repite para cubrirlo entero. No hay que tocar nada del código.
 
 ## Cómo se enganchan
 

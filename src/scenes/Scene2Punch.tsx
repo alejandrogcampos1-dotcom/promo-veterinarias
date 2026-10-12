@@ -15,8 +15,17 @@ export const Scene2Punch: React.FC = () => {
   const {fps} = useVideoConfig();
   const b = beats.punch;
 
-  // La cámara sigue entrando desde donde quedó la escena 1.
-  const camera = ease(frame, b.pushStart, b.pushStart + b.pushFrames, 1.035, 1.42);
+  // El encuadre queda clavado donde lo dejó la escena 1: si se agrandara más,
+  // el celular se comería los márgenes de seguridad (la hora se cortaba contra
+  // el borde izquierdo) y se metería debajo del titular.
+  const camera = 1.035;
+  // El acercamiento pasa a ser DENTRO de la pantalla del celular, que recorta
+  // lo que sobra. Mismo efecto de "entrar a los resultados", sin romper nada.
+  // El desplazamiento acompaña al zoom para que el buscador se vaya entero
+  // hacia arriba, en vez de quedar cortado a la mitad.
+  const zoomP = ease(frame, b.pushStart, b.pushStart + b.pushFrames, 0, 1);
+  const contentZoom = 1 + zoomP * 0.2;
+  const contentShift = -zoomP * 136;
 
   // El mapita se repliega para dar lugar a la tarjeta vacía.
   const mapHeight = ramp(frame, b.mapCollapseStart, b.mapCollapseStart + 14, 168, 0);
@@ -66,6 +75,8 @@ export const Scene2Punch: React.FC = () => {
             rowDim={[dim, dim, dim]}
             label={`${scenes.hook.results.length} resultados cerca de vos`}
             mapHeight={mapHeight}
+            contentZoom={contentZoom}
+            contentShift={contentShift}
             emptyRow={{progress: emptyProgress, shake: emptyShake}}
           />
         </div>

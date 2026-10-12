@@ -2,8 +2,9 @@
  * Renderiza un fotograma (still) de cada escena para poder revisarlas
  * sin tener que renderizar el video entero.
  *
- *   npm run stills              → out/stills/
- *   npm run stills -- --guides  → out/stills-guias/ (con las zonas seguras dibujadas)
+ *   npm run stills                      → out/stills/
+ *   npm run stills -- --guides          → out/stills-guias/ (con las zonas seguras)
+ *   npm run stills -- --seg=5,23,39,48  → solo esos segundos, en out/stills-seg/
  */
 import {bundle} from '@remotion/bundler';
 import {renderStill, selectComposition} from '@remotion/renderer';
@@ -15,7 +16,19 @@ import {pathToFileURL} from 'node:url';
 
 const root = path.resolve(import.meta.dirname, '..');
 const withGuides = process.argv.includes('--guides');
-const outDir = path.join(root, withGuides ? 'out/stills-guias' : 'out/stills');
+/** --seg=5,23.5,39 → renderiza esos segundos en vez de la lista por escena. */
+const segArg = process.argv.find((a) => a.startsWith('--seg='));
+const seconds = segArg
+  ? segArg
+      .slice('--seg='.length)
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n))
+  : null;
+const outDir = path.join(
+  root,
+  seconds ? 'out/stills-seg' : withGuides ? 'out/stills-guias' : 'out/stills',
+);
 
 /** Carga un módulo TS del proyecto, para no duplicar los tiempos acá. */
 const loadModule = async (relativePath) => {
@@ -80,7 +93,12 @@ const main = async () => {
 
   const composition = await selectComposition({serveUrl, id, browserExecutable});
 
-  const shotList = shots(timeline, beats);
+  const shotList = seconds
+    ? seconds.map((s) => ({
+        frame: Math.round(s * 30),
+        name: `seg-${String(s).replace('.', '_').padStart(2, '0')}`,
+      }))
+    : shots(timeline, beats);
   for (const shot of shotList) {
     if (shot.frame >= composition.durationInFrames) {
       console.warn(`! ${shot.name}: frame ${shot.frame} queda fuera del video, se saltea`);

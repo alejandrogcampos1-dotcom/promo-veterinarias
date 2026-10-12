@@ -1,6 +1,6 @@
 # Promo veterinarias — video vertical con Remotion
 
-Video promocional **1080×1920, 30 fps, 49,6 segundos** para vender landings a
+Video promocional **1080×1920, 30 fps, 48,1 segundos** para vender landings a
 veterinarias y pet shops de Quilmes y GBA Sur. Pensado para mandar por
 WhatsApp: engancha en los primeros 2 segundos y se entiende **sin sonido**
 gracias a los subtítulos quemados. Lleva voz en off y efectos de sonido.
@@ -24,6 +24,8 @@ Otros comandos:
 | Comando | Qué hace |
 | --- | --- |
 | `npm run stills -- --guides` | Stills con las zonas seguras dibujadas encima |
+| `npm run stills -- --seg=5,23,39` | Stills de esos segundos, en `out/stills-seg/` |
+| `npm run audio` | Solo la pista de audio, para revisar la mezcla rápido |
 | `npm run typecheck` | Chequea tipos de TypeScript |
 | `npm run fonts` | Vuelve a bajar las tipografías a `public/fonts/` |
 
@@ -156,6 +158,15 @@ Se detectan solos. Si pusiste el archivo y no suena, forzalo:
 music: {src: 'musica.mp3', enabled: true, volume: 0.15, ...}
 ```
 
+La música **se repite sola** si la pista es más corta que el video
+(`music.loop`), y el fade in de 1,5 s y el fade out de 2,5 s se aplican una
+sola vez sobre el total, no en cada repetición. Para revisar la mezcla sin
+esperar el render de los 1443 frames:
+
+```bash
+npm run audio        # → out/promo-veterinarias.wav
+```
+
 ### Efectos de sonido
 
 Ya están puestos y mezclados: **41 efectos** repartidos en las 8 escenas.
@@ -201,7 +212,7 @@ usan las animaciones: si movés una animación, el sonido la sigue.
 
 ### La voz en off, frase por frase
 
-La grabación dura **39,9 s** y el video **49,6 s**, así que en vez de tirarla
+La grabación dura **39,9 s** y el video **48,1 s**, así que en vez de tirarla
 de corrido se reparte frase por frase: cada una se recorta del mp3 y se planta
 en el momento de su escena. **Lo único que se estira son las pausas; el habla
 no se toca.**
@@ -285,14 +296,15 @@ src/
 | 1 | Gancho | 0,00 s | 4,00 s | fundido |
 | 2 | El golpe | 3,87 s | 7,98 s | barrido diagonal |
 | 3 | El problema | 7,73 s | 14,98 s | **barrido coral** |
-| 4 | La solución | 14,73 s | 20,98 s | sube |
-| 5 | Beneficios | 20,73 s | 32,98 s | entra de costado |
-| 6 | Antes / Después | 32,73 s | 36,98 s | barrido circular |
-| 7 | Oferta y precio | 36,73 s | 43,98 s | sube |
-| 8 | Llamado a la acción | 43,73 s | 49,60 s | — |
+| 4 | La solución | 14,73 s | 19,48 s | sube |
+| 5 | Beneficios | 19,23 s | 31,48 s | entra de costado |
+| 6 | Antes / Después | 31,23 s | 35,48 s | barrido circular |
+| 7 | Oferta y precio | 35,23 s | 42,48 s | sube |
+| 8 | Llamado a la acción | 42,23 s | 48,10 s | — |
 
-La escena 8 es más larga que las demás porque tiene que entrar la última
-frase de la voz ("Respondé este mensaje…" y "Sin compromiso") sin apurarla.
+Dos escenas se salen del molde por la voz: la 8 es más larga (176 frames)
+para que entre la última frase sin apurarla, y la 4 más corta (150) porque si
+no quedaba un silencio de 3 segundos antes de los beneficios.
 
 Las escenas se superponen porque las transiciones comen frames de las dos. Si
 cambiás una duración en `scenes.*.durationInFrames`, el total y los cortes se

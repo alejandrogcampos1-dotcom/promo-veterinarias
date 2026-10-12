@@ -24,7 +24,9 @@ export const Scene7Offer: React.FC = () => {
   const pricePop = springSnap(frame, fps, {delay: b.countStart + b.countFrames - 4, duration: 18});
   const shine = ramp(frame, b.shineStart, b.shineStart + 30, 0, 1);
 
-  const bulletsIn = springIn(frame, fps, {delay: b.bulletsStart - 10, duration: 28});
+  // La tarjeta entra junto con el primer check, no antes: así nunca se ve
+  // vacía esperando a que lleguen los ítems.
+  const bulletsIn = springIn(frame, fps, {delay: b.bulletsStart, duration: 28});
 
   const priceCardTop = 278;
   const priceCardHeight = 516;

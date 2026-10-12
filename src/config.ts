@@ -38,9 +38,9 @@ export const video = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const brand = {
-  agency: 'Campos Studio', // ← tu nombre o el de tu estudio
+  agency: 'pogoo', // ← tu nombre o el de tu estudio
   tagline: 'Webs que traen clientes',
-  phone: '+54 9 11 2345-6789', // ← tu número de contacto
+  phone: '1121554103', // ← tu número de contacto
   phoneLabel: 'Escribime al', // texto chico antes del número
 };
 
@@ -197,9 +197,11 @@ export const scenes = {
     counterLabel: 'sin leer',
   },
 
-  // ── Escena 4 · La solución (0:15 – 0:21) ───────────────────────────────
+  // ── Escena 4 · La solución (0:15 – 0:19) ───────────────────────────────
   solution: {
-    durationInFrames: 195,
+    // Recortada: con 195 frames quedaba un hueco de voz de ~3 s entre el
+    // final de esta frase y la primera de beneficios.
+    durationInFrames: 150,
     headline: 'Tu {rubro}, con web propia.',
     ctaButton: 'Pedir turno',
     services: ['Consultas', 'Vacunas', 'Peluquería', 'Urgencias'],
@@ -309,18 +311,18 @@ export const subtitles = {
     // Escena 4
     {from: 15.35, to: 18.03, text: 'Con una web propia todo eso se ordena solo', highlight: 'web propia'},
     // Escena 5
-    {from: 21.25, to: 22.75, text: 'Aparecés cuando te buscan', highlight: 'cuando te buscan'},
-    {from: 24.25, to: 26.43, text: 'Te piden turno por WhatsApp en un toque', highlight: 'en un toque'},
-    {from: 27.25, to: 29.84, text: 'Tus horarios y tu ubicación siempre a mano', highlight: 'siempre a mano'},
-    {from: 30.35, to: 32.05, text: 'Y una imagen que da confianza', highlight: 'confianza'},
+    {from: 19.70, to: 21.20, text: 'Aparecés cuando te buscan', highlight: 'cuando te buscan'},
+    {from: 22.60, to: 24.78, text: 'Te piden turno por WhatsApp en un toque', highlight: 'en un toque'},
+    {from: 25.60, to: 28.19, text: 'Tus horarios y tu ubicación siempre a mano', highlight: 'siempre a mano'},
+    {from: 28.65, to: 30.35, text: 'Y una imagen que da confianza', highlight: 'confianza'},
     // Escena 6
-    {from: 33.55, to: 35.21, text: 'La diferencia se nota al toque', highlight: 'al toque'},
+    {from: 32.00, to: 33.66, text: 'La diferencia se nota al toque', highlight: 'al toque'},
     // Escena 7
-    {from: 37.15, to: 40.55, text: 'Tu web lista en {dias} días, desde {precio} dólares', highlight: '{dias} días'},
-    {from: 40.70, to: 44.16, text: 'Pagás la mitad al empezar y la otra mitad cuando la ves andando', highlight: 'la otra mitad'},
+    {from: 35.70, to: 39.10, text: 'Tu web lista en {dias} días, desde {precio} dólares', highlight: '{dias} días'},
+    {from: 39.25, to: 42.71, text: 'Pagás la mitad al empezar y la otra mitad cuando la ves andando', highlight: 'la otra mitad'},
     // Escena 8
-    {from: 44.40, to: 48.21, text: 'Respondé este mensaje y te armo una demo gratis con tu {rubro}', highlight: 'demo gratis'},
-    {from: 48.33, to: 49.30, text: 'Sin compromiso', highlight: 'Sin compromiso'},
+    {from: 42.95, to: 46.76, text: 'Respondé este mensaje y te armo una demo gratis con tu {rubro}', highlight: 'demo gratis'},
+    {from: 46.90, to: 47.87, text: 'Sin compromiso', highlight: 'Sin compromiso'},
   ],
 };
 
@@ -339,6 +341,11 @@ export const audio = {
     fadeOutSeconds: 2.5,
     /** Desde qué segundo del mp3 arrancar. */
     startFromSeconds: 0,
+    /**
+     * Si la pista es más corta que el video, se repite para que haya música
+     * de punta a punta. Si es más larga, no cambia nada.
+     */
+    loop: true,
   },
   voiceover: {
     src: 'voz.mp3',
@@ -370,15 +377,15 @@ export const audio = {
       {at: 8.35, from: 7.66, to: 9.95, nota: 'Solo con redes, respondés lo mismo…'},
       {at: 10.64, from: 9.95, to: 11.88, nota: '…y los turnos se te pierden.'},
       {at: 15.35, from: 12.39, to: 15.07, nota: 'Con una web propia…'},
-      {at: 21.25, from: 15.49, to: 16.99, nota: 'Aparecés cuando te buscan.'},
-      {at: 24.25, from: 17.22, to: 19.4, nota: 'Te piden turno por WhatsApp…'},
-      {at: 27.25, from: 19.99, to: 22.58, nota: 'Tus horarios y tu ubicación…'},
-      {at: 30.35, from: 22.79, to: 24.49, nota: 'Y una imagen que da confianza.'},
-      {at: 33.55, from: 24.94, to: 26.6, nota: 'La diferencia se nota al toque.'},
-      {at: 37.15, from: 26.96, to: 30.36, nota: 'Tu web lista en siete días…'},
-      {at: 40.7, from: 30.83, to: 34.29, nota: 'Pagás la mitad al empezar…'},
-      {at: 44.4, from: 34.8, to: 38.61, nota: 'Respondé este mensaje…'},
-      {at: 48.33, from: 38.76, to: 39.73, nota: 'Sin compromiso.'},
+      {at: 19.7, from: 15.49, to: 16.99, nota: 'Aparecés cuando te buscan.'},
+      {at: 22.6, from: 17.22, to: 19.4, nota: 'Te piden turno por WhatsApp…'},
+      {at: 25.6, from: 19.99, to: 22.58, nota: 'Tus horarios y tu ubicación…'},
+      {at: 28.65, from: 22.79, to: 24.49, nota: 'Y una imagen que da confianza.'},
+      {at: 32.0, from: 24.94, to: 26.6, nota: 'La diferencia se nota al toque.'},
+      {at: 35.7, from: 26.96, to: 30.36, nota: 'Tu web lista en siete días…'},
+      {at: 39.25, from: 30.83, to: 34.29, nota: 'Pagás la mitad al empezar…'},
+      {at: 42.95, from: 34.8, to: 38.61, nota: 'Respondé este mensaje…'},
+      {at: 46.9, from: 38.76, to: 39.73, nota: 'Sin compromiso.'},
     ],
   },
   sfx: {
